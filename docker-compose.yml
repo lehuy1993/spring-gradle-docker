@@ -1,0 +1,31 @@
+version: '3'
+services:
+  docker-mysql:
+   
+    container_name: docker-mysql
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: spring
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_HOST: '%'
+    volumes:
+      - ./spring.sql:/docker-entrypoint-initdb.d
+    ports:
+      - "6033:3306"
+    restart: always
+    
+  spring-manager-app:
+    restart: always
+    build: 
+      context: . 
+      dockerfile: Dockerfile
+    container_name: spring-docker-container
+    expose:
+      - "8080"
+    ports:
+      - 8080:8080
+#    environment:
+#      WAIT_HOSTS: mysql:3306
+    command: mvn clean spring-boot:run
+    depends_on:
+      - docker-mysql
